@@ -30,6 +30,7 @@ function SimpleAjaxForm(el, action, options) {
         success: undefined,
         failed: undefined,
         complete: undefined,
+        messagesContainer: undefined,
         successMessage: 'Submission Successful. Thank you.',
         successMessageClass: 'form-success alert alert-success',
         errorMessageClass: 'form-error alert alert-danger',
@@ -50,8 +51,19 @@ function SimpleAjaxForm(el, action, options) {
     // Set the form to el, if it happens to be a <form>, or the first child <form>
     this.$form = el.is('form') ? el : el.find('form').first();
 
-    // We'll inject
-    this.$messages = el.find('.form-messages').not('noscript').first();
+    // Where we'll insert messages
+    if (this.options.messagesContainer) {
+        this.$messages = (typeof this.option.messagesContainer === 'jQuery')
+            ? this.options.messagesContainer
+            : $(this.options.messagesContainer);
+    } else {
+        this.$messages = el.find('.form-messages').not('noscript').first();
+
+        if (this.$messages.length < 1) {
+            this.$messages = $('<div />').addClass('form-messages');
+            this.$el.prepend(this.$messages);
+        }
+    }
 
     this.registerEvent();
     this.scrollTopBuffer = 50;
