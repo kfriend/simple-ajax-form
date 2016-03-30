@@ -114,7 +114,7 @@ SimpleAjaxForm.prototype.handleSuccess = function(responseBody, status, error) {
         this.options.successMessage.apply(this, eventArgs);
     }
     else if (this.options.successMessage) {
-        this.$messages.append('<p class="' + this.options.successMessageClass + '">' + this.options.successMessage + '</p>');
+        this.$messages.append('<div class="' + this.options.successMessageClass + '">' + this.options.successMessage + '</div>');
     }
 
     if ($.isFunction(this.options.success)) {
@@ -188,11 +188,11 @@ SimpleAjaxForm.prototype.generateErrors = function(messages) {
         if (messages.hasOwnProperty(field)) {
             if ($.isArray(messages[field])) {
                 for (var i = 0; i < messages[field].length; i++) {
-                    html += '<p class="' + this.options.errorMessageClass+ '">' + htmlEscape(messages[field][i]) + '</p>';
+                    html += '<div class="' + this.options.errorMessageClass+ '">' + htmlEscape(messages[field][i]) + '</div>';
                 }
             }
             else {
-                html += '<p class="' + this.options.errorMessageClass+ '">' + htmlEscape(messages[field]) + '</p>';
+                html += '<div class="' + this.options.errorMessageClass+ '">' + htmlEscape(messages[field]) + '</div>';
             }
         }
     }
