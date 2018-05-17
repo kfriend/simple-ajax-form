@@ -43,7 +43,7 @@ function SimpleAjaxForm(el, action, options) {
     this.$el = el;
 
     if (!action) {
-        throw new Exception('SimpleAjaxForm: Invalid `action` argument supplied');
+        throw new Error('SimpleAjaxForm: Invalid `action` argument supplied');
     }
 
     this.action = action;
@@ -93,7 +93,7 @@ SimpleAjaxForm.prototype.handleSubmit = function(event) {
         // We'll check if there are any file fields. If there are, we'll throw
         // an exception. Hopefully the dev will encounter it
         if (this.$form.find('input[type=file]').length) {
-            throw new Exception(
+            throw new Error(
                 "The target form contains a file field, which requires the FormData" +
                 "API, which this browser does not support."
             );
