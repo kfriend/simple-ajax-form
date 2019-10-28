@@ -99,7 +99,7 @@ class SimpleAjaxForm {
         $.ajax(requestOpts);
 
         if ($.isFunction(this.options.submit)) {
-            this.options.submit.call(this, this);
+            this.options.submit();
         }
 
         this.$el.trigger('simpleajaxform.submit');
@@ -111,14 +111,14 @@ class SimpleAjaxForm {
         this.$messages.empty();
 
         if ($.isFunction(this.options.successMessage)) {
-            this.options.successMessage.apply(this, eventArgs);
+            this.options.successMessage(...eventArgs);
         }
         else if (this.options.successMessage) {
             this.$messages.append('<div class="' + this.options.successMessageClass + '">' + this.options.successMessage + '</div>');
         }
 
         if ($.isFunction(this.options.success)) {
-            this.options.success.apply(this, eventArgs);
+            this.options.success(...eventArgs);
         }
 
         if (this.options.reset) {
@@ -135,7 +135,7 @@ class SimpleAjaxForm {
 
     handleError(responseBody, status, error) {
         // Convert arguments to array
-        let eventArgs = [this].concat(Array.prototype.slice.call(arguments));
+        let eventArgs = [...arguments];
 
         let response = responseBody.responseJSON || {success: false, messages: ['An error was encountered']};
 
@@ -156,7 +156,7 @@ class SimpleAjaxForm {
         this.$messages.append(this.generateErrors(messages));
 
         if ($.isFunction(this.options.failed)) {
-            this.options.failed.apply(this, eventArgs);
+            this.options.failed(...eventArgs);
         }
 
         // Scroll to form messages
@@ -168,14 +168,14 @@ class SimpleAjaxForm {
     }
 
     handleComplete(responseBody, status, error) {
-        let eventArgs = [this].concat(Array.prototype.slice.call(arguments));
+        let eventArgs = [...arguments];
 
         if (this.options.blurSubmitOnSubmit) {
             this.$el.find('[type=submit]').blur();
         }
 
         if ($.isFunction(this.options.complete)) {
-            this.options.complete.apply(this, eventArgs);
+            this.options.complete(...eventArgs);
         }
 
         this.$el.trigger('simpleajaxform.complete', eventArgs);
