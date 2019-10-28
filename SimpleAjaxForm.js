@@ -81,10 +81,10 @@ class SimpleAjaxForm {
             }
         }
 
-        this.registerEvent();
+        this.registerEvents();
     }
 
-    registerEvent() {
+    registerEvents() {
         this.$form.submit(this.handleSubmit);
     }
 
