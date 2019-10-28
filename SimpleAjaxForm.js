@@ -7,7 +7,7 @@ const entities = {
     '>': '&gt;',
     '"': '&quot;',
     "'": '&#x27;',
-    '/': '&#x2F;'
+    '/': '&#x2F;',
 };
 
 function htmlEscape(string) {
@@ -34,7 +34,7 @@ function toHtml(string) {
 // Source: https://github.com/nefe/You-Dont-Need-jQuery#5.3
 function event(eventName, data = {}) {
     if (window.CustomEvent) {
-        const event = new CustomEvent(eventName, {detail: data});
+        const event = new CustomEvent(eventName, { detail: data });
     } else {
         const event = document.createEvent('CustomEvent');
         event.initCustomEvent(eventName, true, true, data);
@@ -64,7 +64,7 @@ class SimpleAjaxForm {
     messages;
 
     constructor(el, action, options) {
-        this.options = {...this.options, ...options};
+        this.options = { ...this.options, ...options };
 
         if (typeof el === 'string') {
             el = document.querySelector(el);
@@ -85,21 +85,21 @@ class SimpleAjaxForm {
         if (el instanceof HTMLFormElement) {
             form = el;
         } else {
-            form = el.querySelector('form')
+            form = el.querySelector('form');
         }
 
         this.form = form;
 
         // Where we'll insert messages
         if (this.options.messagesContainer) {
-            this.messages = (this.options.messagesContainer instanceof Element)
-                ? this.options.messagesContainer
-                : el.querySelector(this.options.messagesContainer);
+            this.messages =
+                this.options.messagesContainer instanceof Element
+                    ? this.options.messagesContainer
+                    : el.querySelector(this.options.messagesContainer);
         } else {
             this.messages = el.querySelector('.form-messages:not(noscript)');
 
             if (this.messages.length < 1) {
-
                 this.messages = toHtml('<div class="form-messages></div>');
                 this.el.appendChild(this.messages);
             }
@@ -137,16 +137,16 @@ class SimpleAjaxForm {
                 let body = await response.json();
 
                 body = {
-                    ...{success: true, messages: []},
-                    ...body
-                }
+                    ...{ success: true, messages: [] },
+                    ...body,
+                };
 
                 this.handleSuccess(body);
             } else {
                 let body = await response.json();
 
                 if (!body) {
-                    body = {success: false, messages: ['An error was encountered']};
+                    body = { success: false, messages: ['An error was encountered'] };
                 }
 
                 this.handleError(body);
@@ -154,9 +154,7 @@ class SimpleAjaxForm {
         } catch (error) {
             this.handleError({
                 success: false,
-                messages: [
-                    'There was an issue communicating with the server',
-                ],
+                messages: ['There was an issue communicating with the server'],
             });
         }
 
@@ -168,8 +166,7 @@ class SimpleAjaxForm {
 
         if (isFunction(this.options.successMessage)) {
             this.options.successMessage(...arguments);
-        }
-        else if (this.options.successMessage) {
+        } else if (this.options.successMessage) {
             this.messages.innerHTML = `<div class="${this.options.successMessageClass}">${this.options.successMessage}</div>`;
         }
 
@@ -183,7 +180,7 @@ class SimpleAjaxForm {
 
         // Scroll to form messages
         if (this.options.scrollToMessage) {
-            this.messages.scrollIntoView({ behavior: "smooth" });
+            this.messages.scrollIntoView({ behavior: 'smooth' });
         }
 
         this.el.dispatchEvent(event(`${eventNamespace}.success`, ...arguments));
@@ -194,11 +191,9 @@ class SimpleAjaxForm {
 
         if (response.messages) {
             messages = response.messages;
-        }
-        else if (response.errors) {
+        } else if (response.errors) {
             messages = response.errors;
-        }
-        else {
+        } else {
             messages = responseData;
             delete messages.success;
         }
@@ -211,7 +206,7 @@ class SimpleAjaxForm {
 
         // Scroll to form messages
         if (this.options.scrollToMessage) {
-            this.messages.scrollIntoView({ behavior: "smooth" });
+            this.messages.scrollIntoView({ behavior: 'smooth' });
         }
 
         this.el.dispatchEvent(event(`${eventNamespace}.error`, arguments));
@@ -236,11 +231,14 @@ class SimpleAjaxForm {
             if (messages.hasOwnProperty(field)) {
                 if (Array.isArray(messages[field])) {
                     for (let i = 0; i < messages[field].length; i++) {
-                        html += `<div class="${this.options.errorMessageClass}">${htmlEscape(messages[field][i])}</div>`;
+                        html += `<div class="${this.options.errorMessageClass}">${htmlEscape(
+                            messages[field][i]
+                        )}</div>`;
                     }
-                }
-                else {
-                    html += `<div class="${this.options.errorMessageClass}">${htmlEscape(messages[field])}</div>`;
+                } else {
+                    html += `<div class="${this.options.errorMessageClass}">${htmlEscape(
+                        messages[field]
+                    )}</div>`;
                 }
             }
         }
