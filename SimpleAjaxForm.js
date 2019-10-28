@@ -19,6 +19,15 @@ function htmlEscape(string) {
     });
 }
 
+function isFunction(item) {
+    if (typeof item === 'function') {
+        return true;
+    }
+
+    let type = Object.prototype.toString.call(item);
+    return type === '[object Function]' || type === '[object GeneratorFunction]';
+}
+
 class SimpleAjaxForm {
     options = {
         reset: true,
@@ -83,7 +92,7 @@ class SimpleAjaxForm {
         event.preventDefault();
         this.$messages.empty();
 
-        if ($.isFunction(this.options.submit)) {
+        if (isFunction(this.options.submit)) {
             this.options.submit();
         }
 
@@ -133,14 +142,14 @@ class SimpleAjaxForm {
     handleSuccess(responseBody) {
         this.$messages.empty();
 
-        if ($.isFunction(this.options.successMessage)) {
+        if (isFunction(this.options.successMessage)) {
             this.options.successMessage(...arguments);
         }
         else if (this.options.successMessage) {
             this.$messages.append('<div class="' + this.options.successMessageClass + '">' + this.options.successMessage + '</div>');
         }
 
-        if ($.isFunction(this.options.success)) {
+        if (isFunction(this.options.success)) {
             this.options.success(...arguments);
         }
 
@@ -172,7 +181,7 @@ class SimpleAjaxForm {
 
         this.$messages.append(this.generateErrors(messages));
 
-        if ($.isFunction(this.options.failed)) {
+        if (isFunction(this.options.failed)) {
             this.options.failed(...arguments);
         }
 
@@ -189,7 +198,7 @@ class SimpleAjaxForm {
             this.$el.find('[type=submit]').blur();
         }
 
-        if ($.isFunction(this.options.complete)) {
+        if (isFunction(this.options.complete)) {
             this.options.complete();
         }
 
