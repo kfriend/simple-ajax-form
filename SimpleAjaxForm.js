@@ -210,7 +210,7 @@ class SimpleAjaxForm {
 
         for (let field in messages) {
             if (messages.hasOwnProperty(field)) {
-                if ($.isArray(messages[field])) {
+                if (Array.isArray(messages[field])) {
                     for (let i = 0; i < messages[field].length; i++) {
                         html += '<div class="' + this.options.errorMessageClass+ '">' + htmlEscape(messages[field][i]) + '</div>';
                     }
