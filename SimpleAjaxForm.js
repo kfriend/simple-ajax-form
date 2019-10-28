@@ -1,3 +1,6 @@
+const moduleName = 'SimpleAjaxForm';
+const eventNamespace = moduleName.toLocaleLowerCase();
+
 const entities = {
     '&': '&amp;',
     '<': '&lt;',
@@ -67,12 +70,12 @@ class SimpleAjaxForm {
             el = document.querySelector(el);
         }
 
-        if (!el || el instanceof Element === false) {
-            throw new Error('SimpleAjaxForm: Invalid target element supplied');
+        if (!el || (el instanceof Element) === false) {
+            throw new Error(`${moduleName}: Invalid target element supplied`)
         }
 
         if (!action) {
-            throw new Error('SimpleAjaxForm: Invalid `action` argument supplied');
+            throw new Error(`${moduleName}: Invalid 'action' argument supplied`);
         }
 
         this.action = action;
@@ -117,7 +120,7 @@ class SimpleAjaxForm {
             this.options.submit();
         }
 
-        this.el.dispatchEvent(event('simpleajaxform.submit'));
+        this.el.dispatchEvent(event(`${eventNamespace}.submit`));
 
         let requestOpts = {
             method: 'POST',
@@ -180,7 +183,7 @@ class SimpleAjaxForm {
             this.messages.scrollIntoView({ behavior: 'smooth' });
         }
 
-        this.el.dispatchEvent(event('simpleajaxform.success', ...arguments));
+        this.el.dispatchEvent(event(`${eventNamespace}.success`, ...arguments));
     }
 
     handleError(response) {
@@ -206,7 +209,7 @@ class SimpleAjaxForm {
             this.messages.scrollIntoView({ behavior: 'smooth' });
         }
 
-        this.el.dispatchEvent(event('simpleajaxform.error', arguments));
+        this.el.dispatchEvent(event(`${eventNamespace}.error`, arguments));
     }
 
     handleComplete() {
@@ -218,7 +221,7 @@ class SimpleAjaxForm {
             this.options.complete();
         }
 
-        this.el.dispatchEvent(event('simpleajaxform.complete'));
+        this.el.dispatchEvent(event(`${eventNamespace}.complete`));
     }
 
     generateErrors(messages) {
