@@ -1,7 +1,3 @@
-import $ from jQuery;
-
-const global = window;
-
 const entities = {
     '&': '&amp;',
     '<': '&lt;',
@@ -17,6 +13,31 @@ function htmlEscape(string) {
     return String(string).replace(regex, function(match) {
         return entities[match];
     });
+}
+
+function isFunction(item) {
+    if (typeof item === 'function') {
+        return true;
+    }
+
+    let type = Object.prototype.toString.call(item);
+    return type === '[object Function]' || type === '[object GeneratorFunction]';
+}
+
+function toHtml(string) {
+    return document.createRange().createContextualFragment(string);
+}
+
+// Source: https://github.com/nefe/You-Dont-Need-jQuery#5.3
+function event(eventName, data = {}) {
+    if (window.CustomEvent) {
+        const event = new CustomEvent(eventName, {detail: data});
+    } else {
+        const event = document.createEvent('CustomEvent');
+        event.initCustomEvent(eventName, true, true, data);
+    }
+
+    return event;
 }
 
 class SimpleAjaxForm {
@@ -35,19 +56,20 @@ class SimpleAjaxForm {
     };
 
     action;
-    $form;
-    $messages;
-    scrollTopBuffer = 50;
-    $scrollTarget;
+    el;
+    form;
+    messages;
 
     constructor(el, action, options) {
         this.options = {...this.options, ...options};
 
-        // Make sure a jQuery instance was passed, and that we're dealing with
-        // just one element.
-        el = (el instanceof $) ? el.first() : $(el).first();
+        if (typeof el === 'string') {
+            el = document.querySelector(el);
+        }
 
-        this.$el = el;
+        if (!el || (el instanceof Element) === false) {
+            throw new Error('SimpleAjaxForm: Invalid target element supplied')
+        }
 
         if (!action) {
             throw new Error('SimpleAjaxForm: Invalid `action` argument supplied');
@@ -55,39 +77,47 @@ class SimpleAjaxForm {
 
         this.action = action;
 
-        // Set the form to el, if it happens to be a <form>, or the first child <form>
-        this.$form = el.is('form') ? el : el.find('form').first();
+        let form;
+
+        if (el instanceof HTMLFormElement) {
+            form = el;
+        } else {
+            form = el.querySelector('form')
+        }
+
+        this.form = form;
 
         // Where we'll insert messages
         if (this.options.messagesContainer) {
-            this.$messages = (typeof this.option.messagesContainer === 'jQuery')
+            this.messages = (this.options.messagesContainer instanceof Element)
                 ? this.options.messagesContainer
-                : $(this.options.messagesContainer);
+                : el.querySelector(this.options.messagesContainer);
         } else {
-            this.$messages = el.find('.form-messages').not('noscript').first();
+            this.messages = el.querySelector('.form-messages:not(noscript)');
 
-            if (this.$messages.length < 1) {
-                this.$messages = $('<div />').addClass('form-messages');
-                this.$el.prepend(this.$messages);
+            if (this.messages.length < 1) {
+
+                this.messages = toHtml('<div class="form-messages></div>');
+                this.el.appendChild(this.messages);
             }
         }
 
-        this.registerEvent();
+        this.registerEvents();
     }
 
-    registerEvent() {
+    registerEvents() {
         this.$form.submit(this.handleSubmit);
     }
 
     async handleSubmit(event) {
         event.preventDefault();
-        this.$messages.empty();
+        this.messages.innerHTML = null;
 
-        if ($.isFunction(this.options.submit)) {
+        if (isFunction(this.options.submit)) {
             this.options.submit();
         }
 
-        this.$el.trigger('simpleajaxform.submit');
+        this.el.dispatchEvent(event('simpleajaxform.submit'));
 
         let requestOpts = {
             method: 'POST',
@@ -123,7 +153,7 @@ class SimpleAjaxForm {
                 success: false,
                 messages: [
                     'There was an issue communicating with the server',
-                ]
+                ],
             });
         }
 
@@ -131,29 +161,29 @@ class SimpleAjaxForm {
     }
 
     handleSuccess(responseBody) {
-        this.$messages.empty();
+        this.messages.innerHTML = null;
 
-        if ($.isFunction(this.options.successMessage)) {
+        if (isFunction(this.options.successMessage)) {
             this.options.successMessage(...arguments);
         }
         else if (this.options.successMessage) {
-            this.$messages.append('<div class="' + this.options.successMessageClass + '">' + this.options.successMessage + '</div>');
+            this.messages.innerHTML = `<div class="${this.options.successMessageClass}">${this.options.successMessage}</div>`;
         }
 
-        if ($.isFunction(this.options.success)) {
+        if (isFunction(this.options.success)) {
             this.options.success(...arguments);
         }
 
         if (this.options.reset) {
-            this.$form[0].reset();
+            this.form.reset();
         }
 
         // Scroll to form messages
         if (this.options.scrollToMessage) {
-            this.$scrollTarget.animate({scrollTop: this.$messages.offset().top - this.scrollTopBuffer});
+            this.messages.scrollIntoView({ behavior: "smooth" });
         }
 
-        this.$el.trigger('simpleajaxform.success', ...arguments);
+        this.el.dispatchEvent(event('simpleajaxform.success', ...arguments));
     }
 
     handleError(response) {
@@ -170,30 +200,30 @@ class SimpleAjaxForm {
             delete messages.success;
         }
 
-        this.$messages.append(this.generateErrors(messages));
+        this.messages.innerHTML = this.generateErrors(messages);
 
-        if ($.isFunction(this.options.failed)) {
+        if (isFunction(this.options.failed)) {
             this.options.failed(...arguments);
         }
 
         // Scroll to form messages
         if (this.options.scrollToMessage) {
-            this.$scrollTarget.animate({scrollTop: this.$messages.offset().top - this.scrollTopBuffer});
+            this.messages.scrollIntoView({ behavior: "smooth" });
         }
 
-        this.$el.trigger('simpleajaxform.error', arguments);
+        this.el.dispatchEvent(event('simpleajaxform.error', arguments));
     }
 
     handleComplete() {
         if (this.options.blurSubmitOnSubmit) {
-            this.$el.find('[type=submit]').blur();
+            [...this.el.querySelectorAll('[type=submit]')].forEach(el => el.blur());
         }
 
-        if ($.isFunction(this.options.complete)) {
+        if (isFunction(this.options.complete)) {
             this.options.complete();
         }
 
-        this.$el.trigger('simpleajaxform.complete');
+        this.el.dispatchEvent(event('simpleajaxform.complete'));
     }
 
     generateErrors(messages) {
@@ -201,7 +231,7 @@ class SimpleAjaxForm {
 
         for (let field in messages) {
             if (messages.hasOwnProperty(field)) {
-                if ($.isArray(messages[field])) {
+                if (Array.isArray(messages[field])) {
                     for (let i = 0; i < messages[field].length; i++) {
                         html += '<div class="' + this.options.errorMessageClass+ '">' + htmlEscape(messages[field][i]) + '</div>';
                     }
