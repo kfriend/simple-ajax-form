@@ -1,0 +1,78 @@
+{
+  "root": true,
+  "parser": "babel-eslint",
+  "extends": "eslint:recommended",
+  "globals": {
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "amd": true,
+    "browser": true,
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "globalReturn": true,
+      "generators": false,
+      "objectLiteralDuplicateProperties": false,
+      "experimentalObjectRestSpread": true
+    },
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "import",
+    "babel"
+  ],
+  "settings": {
+    "import/core-modules": [],
+    "import/ignore": [
+      "node_modules",
+      "\\.(coffee|scss|css|less|hbs|svg|json)$"
+    ]
+  },
+  "rules": {
+    "array-bracket-spacing": [
+      2,
+      "never"
+    ],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "ignore"
+      }
+    ],
+    "curly": 2,
+    "eol-last": 2,
+    "eqeqeq": [
+      2,
+      "smart"
+    ],
+    "new-cap": 1,
+    "no-console": 0,
+    "no-lonely-if": 1,
+    "no-mixed-spaces-and-tabs": 2,
+    "no-multi-spaces": 2,
+    "no-trailing-spaces": 2,
+    "no-unused-vars": 1,
+    "quotes": [
+      2,
+      "single",
+      "avoid-escape"
+    ],
+    "semi": [
+      2,
+      "always"
+    ],
+    "strict": [
+      2,
+      "safe"
+    ],
+    "space-unary-ops": 2,
+    "yoda": 2
+  }
+}

@@ -1,0 +1,15 @@
+# Annoying Files
+.AppleDouble
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Icon^M^M
+Thumbs.db
+ehthumbs.db
+
+# Package managers
+/node_modules/
+
+# Always keep
+!.gitkeep
