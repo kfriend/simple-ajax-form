@@ -130,20 +130,18 @@ class SimpleAjaxForm {
         this.handleComplete();
     }
 
-    handleSuccess(responseBody, status, error) {
-        let eventArgs = [...arguments];
-
+    handleSuccess(responseBody) {
         this.$messages.empty();
 
         if ($.isFunction(this.options.successMessage)) {
-            this.options.successMessage(...eventArgs);
+            this.options.successMessage(...arguments);
         }
         else if (this.options.successMessage) {
             this.$messages.append('<div class="' + this.options.successMessageClass + '">' + this.options.successMessage + '</div>');
         }
 
         if ($.isFunction(this.options.success)) {
-            this.options.success(...eventArgs);
+            this.options.success(...arguments);
         }
 
         if (this.options.reset) {
@@ -155,16 +153,10 @@ class SimpleAjaxForm {
             this.$scrollTarget.animate({scrollTop: this.$messages.offset().top - this.scrollTopBuffer});
         }
 
-        this.$el.trigger('simpleajaxform.success', eventArgs);
+        this.$el.trigger('simpleajaxform.success', ...arguments);
     }
 
-    handleError(responseBody, status, error) {
-        // Convert arguments to array
-        let eventArgs = [...arguments];
-
-        let response = responseBody.responseJSON || {success: false, messages: ['An error was encountered']};
-
-        let responseData = JSON.parse(JSON.stringify(response));
+    handleError(response) {
         let messages;
 
         if (response.messages) {
@@ -181,7 +173,7 @@ class SimpleAjaxForm {
         this.$messages.append(this.generateErrors(messages));
 
         if ($.isFunction(this.options.failed)) {
-            this.options.failed(...eventArgs);
+            this.options.failed(...arguments);
         }
 
         // Scroll to form messages
@@ -189,21 +181,19 @@ class SimpleAjaxForm {
             this.$scrollTarget.animate({scrollTop: this.$messages.offset().top - this.scrollTopBuffer});
         }
 
-        this.$el.trigger('simpleajaxform.error', eventArgs);
+        this.$el.trigger('simpleajaxform.error', arguments);
     }
 
-    handleComplete(responseBody, status, error) {
-        let eventArgs = [...arguments];
-
+    handleComplete() {
         if (this.options.blurSubmitOnSubmit) {
             this.$el.find('[type=submit]').blur();
         }
 
         if ($.isFunction(this.options.complete)) {
-            this.options.complete(...eventArgs);
+            this.options.complete();
         }
 
-        this.$el.trigger('simpleajaxform.complete', eventArgs);
+        this.$el.trigger('simpleajaxform.complete');
     }
 
     generateErrors(messages) {
